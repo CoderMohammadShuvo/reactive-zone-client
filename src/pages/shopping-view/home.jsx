@@ -2,14 +2,20 @@ import {
   Airplay,
   BabyIcon,
 
+  Camera,
+
   CloudLightning,
+  GamepadIcon,
+  Headphones,
   Heater,
   Images,
+  Laptop,
   Shirt,
   ShirtIcon,
   ShoppingBasket,
   UmbrellaIcon,
   WashingMachine,
+  Watch,
   WatchIcon,
 } from "lucide-react";
 
@@ -37,11 +43,11 @@ import { useToast } from "@/hooks/use-toast";
 import { getFeatureImages } from "@/store/common-slice";
 
 const categoriesWithIcon = [
-  { id: "men", label: "Men", icon: ShirtIcon },
-  { id: "women", label: "Women", icon: CloudLightning },
-  { id: "kids", label: "Kids", icon: BabyIcon },
-  { id: "accessories", label: "Accessories", icon: WatchIcon },
-  { id: "footwear", label: "Footwear", icon: UmbrellaIcon },
+  { id: "headphone", label: "Headphone", icon: Headphones },
+  { id: "laptop", label: "Laptop", icon: Laptop },
+  { id: "gaming", label: "Gaming", icon: GamepadIcon },
+  { id: "camera", label: "Camera", icon: Camera },
+  { id: "watch", label: "Watch", icon: Watch },
 ];
 
 const brandsWithIcon = [
@@ -131,38 +137,33 @@ function ShoppingHome() {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-col min-h-screen ">
-      <div className=" ">
-        <Carousel className="max-w-7xl mx-auto h-[500px] my-10">
-          <CarouselContent className="h-[500px]">
-            {Array.from({ length: 1 }).map((_, index) => (
-              <CarouselItem key={index}>
-                <div className="p-1">
-                  <Card>
-                    <CardContent className="flex aspect-square items-center justify-center p-6">
-                      {featureImageList && featureImageList.length > 0
-                        ? featureImageList.map((slide, index) => (
-                            <img
-                              src={slide?.image}
-                              key={index}
-                              className={`${
-                                index === currentSlide
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              } absolute top-0 left-0 w-full h-full object-fit transition-opacity duration-1000`}
-                            />
-                          ))
-                        : null}
-                    </CardContent>
-                  </Card>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
-      </div>
+    <div className="flex flex-col min-h-screen pt-[100px]">
+     <div className="max-w-7xl mx-auto mt-4 px-4">
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    {/* Left Large Image */}
+    <div className="lg:col-span-2 h-[60vh] sm:h-auto">
+      <img 
+        src="https://www.ryans.com/storage/sliders/Falgun-Fest-2025-Up-to-50000-tk-Discount-main-Slider_1738815702.webp" 
+        className="w-full h-full object-cover rounded-lg" 
+        alt="Main Banner" 
+      />
+    </div>
+
+    {/* Right Side Smaller Images */}
+    <div className="flex flex-col gap-4 h-[60vh] sm:h-auto">
+      <img 
+        src="https://www.ryans.com/storage/right_side/FD-HT-500DA-Home-Theater-Speaker-Right-Slider_1738817120.webp" 
+        className="w-full h-1/2 object-cover rounded-lg" 
+        alt="Top Right Banner" 
+      />
+      <img 
+        src="https://www.ryans.com/storage/right_side/Buy-Logitech-products-get-Discount-right-slider%20(2)_1737880672.webp" 
+        className="w-full h-1/2 object-cover rounded-lg" 
+        alt="Bottom Right Banner" 
+      />
+    </div>
+  </div>
+</div>
       <section className="py-12 bg-gray-50 ">
         <div className="px-4 max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-8">
@@ -212,7 +213,7 @@ function ShoppingHome() {
           <h2 className="text-3xl  font-bold text-center mb-8">
             Feature Products
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
             {productList && productList.length > 0
               ? productList.map((productItem) => (
                   <ShoppingProductTile

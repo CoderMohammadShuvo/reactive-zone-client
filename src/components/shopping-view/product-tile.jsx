@@ -11,11 +11,11 @@ function ShoppingProductTile({
   return (
     <Card className="w-full max-w-sm mx-auto">
       <div onClick={() => handleGetProductDetails(product?._id)}>
-        <div className="relative">
+        <div className="relative p-4">
           <img
             src={product?.image}
             alt={product?.title}
-            className="w-full h-[300px] object-cover rounded-t-lg"
+            className="w-full h-[300px] object-cover rounded-t-lg cover"
           />
           {product?.totalStock === 0 ? (
             <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
@@ -32,12 +32,15 @@ function ShoppingProductTile({
           ) : null}
         </div>
         <CardContent className="p-4">
-          <h2 className="text-xl font-bold mb-2">{product?.title}</h2>
+          <h2 className="text-xl font-bold mb-2 truncate">{product?.title}</h2>
+          <span className="text-[16px] text-muted-foreground line-clamp-2">
+          {product?.description}
+            </span>
           <div className="flex justify-between items-center mb-2">
-            <span className="text-[16px] text-muted-foreground">
+            <span className="text-[16px] text-muted-foreground font-bold mt-4">
               {categoryOptionsMap[product?.category]}
             </span>
-            <span className="text-[16px] text-muted-foreground">
+            <span className="text-[16px] text-muted-foreground font-bold mt-4">
               {brandOptionsMap[product?.brand]}
             </span>
           </div>
