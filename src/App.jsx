@@ -71,15 +71,7 @@ function App() {
 
         {/*  */}
 
-        <Route path="/admin" element={<CheckAuth isAuthenticated={isAuthenticated} user={user}>
-            <AdminLayout />
-            </CheckAuth>}>
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="products" element={<AdminProducts />} />
-          <Route path="orders" element={<AdminOrders />} />
-          <Route path="users" element={<AllUsersForAdmin />} />
-          <Route path="features" element={<AdminFeatures />} />
-        </Route>
+      
         <Route
           path="/shop"
           element={
@@ -96,6 +88,21 @@ function App() {
           <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="payment-fail" element={<PaymentFailed />} />
           <Route path="search" element={<SearchProducts />} />
+        </Route>
+
+        <Route
+          path="/admin"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+                <AdminLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="users" element={<AllUsersForAdmin />} />
+          <Route path="features" element={<AdminFeatures />} />
         </Route>
         <Route path="/unauth-page" element={<UnauthPage />} />
         <Route path="*" element={<NotFound />} />
