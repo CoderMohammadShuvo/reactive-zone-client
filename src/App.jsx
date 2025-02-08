@@ -69,7 +69,7 @@ function App() {
           <Route path="register" element={<AuthRegister />} />
         </Route>
 
-       {/* <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+        {/* <CheckAuth isAuthenticated={isAuthenticated} user={user}>
             <AdminLayout />
             </CheckAuth> */}
 
