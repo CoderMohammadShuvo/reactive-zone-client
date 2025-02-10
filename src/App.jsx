@@ -24,6 +24,7 @@ import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import SearchProducts from "./pages/shopping-view/search";
 import PaymentFailed from "./pages/shopping-view/payment-fail";
 import AllUsersForAdmin from "./pages/admin-view/all-users";
+import { CategoryManagement } from "./pages/admin-view/category-management";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -79,6 +80,7 @@ function App() {
           <Route path="orders" element={<AdminOrders />} />
           <Route path="users" element={<AllUsersForAdmin />} />
           <Route path="features" element={<AdminFeatures />} />
+          <Route path="category" element={<CategoryManagement />} />
         </Route>
         <Route
           path="/shop"

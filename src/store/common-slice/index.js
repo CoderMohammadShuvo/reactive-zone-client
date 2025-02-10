@@ -10,7 +10,7 @@ export const getFeatureImages = createAsyncThunk(
   "/order/getFeatureImages",
   async () => {
     const response = await axios.get(
-      `https://reactive-zone-backend-niuu.vercel.app/api/common/feature/get`
+      `https://reactive-zone-backend.vercel.app/api/common/feature/get`
     );
     return response.data;
   }

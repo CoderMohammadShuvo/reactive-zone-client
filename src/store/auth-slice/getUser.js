@@ -12,7 +12,7 @@ export const getLoggedInUsers2 = createAsyncThunk(
   "/admin/logged-in-users",
   async () => {
     const response = await axios.get(
-      "https://reactive-zone-backend-niuu.vercel.app/api/admin/logged-in-users",
+      "https://reactive-zone-backend.vercel.app/api/admin/logged-in-users",
       {
         withCredentials: true,
       }

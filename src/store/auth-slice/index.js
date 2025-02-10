@@ -13,7 +13,7 @@ export const registerUser = createAsyncThunk(
 
   async (formData) => {
     const response = await axios.post(
-      "https://reactive-zone-backend-niuu.vercel.app/api/auth/register",
+      "https://reactive-zone-backend.vercel.app/api/auth/register",
       formData,
       {
         withCredentials: true,
@@ -29,7 +29,7 @@ export const loginUser = createAsyncThunk(
 
   async (formData) => {
     const response = await axios.post(
-      "https://reactive-zone-backend-niuu.vercel.app/api/auth/login",
+      "https://reactive-zone-backend.vercel.app/api/auth/login",
       formData,
       {
         withCredentials: true,
@@ -45,7 +45,7 @@ export const logoutUser = createAsyncThunk(
 
   async () => {
     const response = await axios.post(
-      "https://reactive-zone-backend-niuu.vercel.app/api/auth/logout",
+      "https://reactive-zone-backend.vercel.app/api/auth/logout",
       {},
       {
         withCredentials: true,
@@ -61,7 +61,7 @@ export const checkAuth = createAsyncThunk(
 
   async () => {
     const response = await axios.get(
-      "https://reactive-zone-backend-niuu.vercel.app/api/auth/check-auth",
+      "https://reactive-zone-backend.vercel.app/api/auth/check-auth",
       {
         withCredentials: true,
         headers: {
@@ -79,7 +79,7 @@ export const getLoggedInUsers = createAsyncThunk(
   "/admin/logged-in-users",
   async () => {
     const response = await axios.get(
-      "https://reactive-zone-backend-niuu.vercel.app/api/admin/logged-in-users",
+      "https://reactive-zone-backend.vercel.app/api/admin/logged-in-users",
       {
         withCredentials: true,
       }

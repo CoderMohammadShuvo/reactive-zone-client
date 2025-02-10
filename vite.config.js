@@ -14,4 +14,11 @@ export default defineConfig({
     open: true, // Automatically open the browser
     historyApiFallback: true, // Enable SPA fallback
   },
+  proxy: {
+    '/api': {
+      target: 'https://reactive-zone-backend.vercel.app',
+      changeOrigin: true,
+      secure: false
+    }
+  }
 });

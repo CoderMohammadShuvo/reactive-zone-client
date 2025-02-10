@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import {
@@ -17,7 +19,19 @@ function CommonForm({
   onSubmit,
   buttonText,
   isBtnDisabled,
+  fetchData, // 👈 Function to fetch data
 }) {
+  const [options, setOptions] = useState({}); // Store fetched options dynamically
+
+  // Fetch data for select dropdowns when component mounts
+  useEffect(() => {
+    if (fetchData) {
+      fetchData().then((data) => {
+        setOptions(data);
+      });
+    }
+  }, [fetchData]);
+
   function renderInputsByComponentType(getControlItem) {
     let element = null;
     const value = formData[getControlItem.name] || "";
@@ -39,9 +53,11 @@ function CommonForm({
             }
           />
         );
-
         break;
+
       case "select":
+        const selectOptions = options[getControlItem.name] || getControlItem.options || [];
+
         element = (
           <Select
             onValueChange={(value) =>
@@ -56,18 +72,21 @@ function CommonForm({
               <SelectValue placeholder={getControlItem.label} />
             </SelectTrigger>
             <SelectContent>
-              {getControlItem.options && getControlItem.options.length > 0
-                ? getControlItem.options.map((optionItem) => (
-                    <SelectItem key={optionItem.id} value={optionItem.id}>
-                      {optionItem.label}
-                    </SelectItem>
-                  ))
-                : null}
+              {selectOptions.length > 0 ? (
+                selectOptions.map((optionItem) => (
+                  <SelectItem key={optionItem.id} value={optionItem.id}>
+                    {optionItem.label}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem disabled>No options available</SelectItem>
+              )}
             </SelectContent>
           </Select>
         );
 
         break;
+
       case "textarea":
         element = (
           <Textarea
@@ -83,7 +102,6 @@ function CommonForm({
             }
           />
         );
-
         break;
 
       default:

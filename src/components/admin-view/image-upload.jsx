@@ -47,7 +47,7 @@ function ProductImageUpload({
     const data = new FormData();
     data.append("my_file", imageFile);
     const response = await axios.post(
-      "https://reactive-zone-backend-niuu.vercel.app/api/admin/products/upload-image",
+      "https://reactive-zone-backend.vercel.app/api/admin/products/upload-image",
       data
     );
     console.log(response, "response");

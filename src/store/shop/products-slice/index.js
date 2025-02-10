@@ -18,7 +18,7 @@ export const fetchAllFilteredProducts = createAsyncThunk(
     });
 
     const result = await axios.get(
-      `https://reactive-zone-backend-niuu.vercel.app/api/shop/products/get?${query}`
+      `https://reactive-zone-backend.vercel.app/api/shop/products/get?${query}`
     );
 
     console.log(result);

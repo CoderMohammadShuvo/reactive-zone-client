@@ -25,7 +25,7 @@ export const capturePayment = createAsyncThunk(
   "/order/capturePayment",
   async ({ paymentId, payerId, orderId }) => {
     const response = await axios.post(
-      "https://reactive-zone-backend-niuu.vercel.app/api/shop/order/capture",
+      "https://reactive-zone-backend.vercel.app/api/shop/order/capture",
       {
         paymentId,
         payerId,
@@ -41,7 +41,7 @@ export const getAllOrdersByUserId = createAsyncThunk(
   "/order/getAllOrdersByUserId",
   async (userId) => {
     const response = await axios.get(
-      `https://reactive-zone-backend-niuu.vercel.app/api/shop/order/list/${userId}`
+      `https://reactive-zone-backend.vercel.app/api/shop/order/list/${userId}`
     );
 
     return response.data;
@@ -52,7 +52,7 @@ export const getOrderDetails = createAsyncThunk(
   "/order/getOrderDetails",
   async (id) => {
     const response = await axios.get(
-      `https://reactive-zone-backend-niuu.vercel.app/api/shop/order/details/${id}`
+      `https://reactive-zone-backend.vercel.app/api/shop/order/details/${id}`
     );
 
     return response.data;

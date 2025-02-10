@@ -1,24 +1,18 @@
-import ProductImageUpload from "@/components/admin-view/image-upload";
-import AdminProductTile from "@/components/admin-view/product-tile";
-import CommonForm from "@/components/common/form";
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { addProductFormElements } from "@/config";
-import { useToast } from "@/hooks/use-toast";
-// import { addProductFormElements } from "@/config";
-import {
-  addNewProduct,
-  deleteProduct,
-  editProduct,
-  fetchAllProducts,
-} from "@/store/admin/products-slice";
-import { Fragment, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+"use client"
+
+import ProductImageUpload from "@/components/admin-view/image-upload"
+import CommonForm from "@/components/common/form"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { addProductFormElements } from "@/config"
+import { useToast } from "@/hooks/use-toast"
+import { addNewProduct, deleteProduct, editProduct, fetchAllProducts } from "@/store/admin/products-slice"
+import { Fragment, useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { CategoryManagement } from "./category-management"
+import { Input } from "@/components/ui/input"
+import { Search } from "lucide-react"
 
 const initialFormData = {
   image: null,
@@ -30,113 +24,175 @@ const initialFormData = {
   salePrice: "",
   totalStock: "",
   averageReview: 0,
-};
+}
 
 function AdminProducts() {
-  const [openCreateProductsDialog, setOpenCreateProductsDialog] =
-    useState(false);
-  const [formData, setFormData] = useState(initialFormData);
-  const [imageFile, setImageFile] = useState(null);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
-  const [imageLoadingState, setImageLoadingState] = useState(false);
-  const [currentEditedId, setCurrentEditedId] = useState(null);
+  const [openCreateProductsDialog, setOpenCreateProductsDialog] = useState(false)
+  const [openCategoryDialog, setOpenCategoryDialog] = useState(false)
+  const [formData, setFormData] = useState(initialFormData)
+  const [imageFile, setImageFile] = useState(null)
+  const [uploadedImageUrl, setUploadedImageUrl] = useState("")
+  const [imageLoadingState, setImageLoadingState] = useState(false)
+  const [currentEditedId, setCurrentEditedId] = useState(null)
+  const [searchTerm, setSearchTerm] = useState("")
 
-  const { productList } = useSelector((state) => state.adminProducts);
-  const dispatch = useDispatch();
-  const { toast } = useToast();
+  const { productList } = useSelector((state) => state.adminProducts)
+  const dispatch = useDispatch()
+  const { toast } = useToast()
 
   function onSubmit(event) {
-    event.preventDefault();
+    event.preventDefault()
 
     currentEditedId !== null
       ? dispatch(
           editProduct({
             id: currentEditedId,
             formData,
-          })
+          }),
         ).then((data) => {
-          console.log(data, "edit");
+          console.log(data, "edit")
 
           if (data?.payload?.success) {
-            dispatch(fetchAllProducts());
-            setFormData(initialFormData);
-            setOpenCreateProductsDialog(false);
-            setCurrentEditedId(null);
+            dispatch(fetchAllProducts())
+            setFormData(initialFormData)
+            setOpenCreateProductsDialog(false)
+            setCurrentEditedId(null)
           }
         })
       : dispatch(
           addNewProduct({
             ...formData,
             image: uploadedImageUrl,
-          })
+          }),
         ).then((data) => {
           if (data?.payload?.success) {
-            dispatch(fetchAllProducts());
-            setOpenCreateProductsDialog(false);
-            setImageFile(null);
-            setFormData(initialFormData);
+            dispatch(fetchAllProducts())
+            setOpenCreateProductsDialog(false)
+            setImageFile(null)
+            setFormData(initialFormData)
             toast({
-              title: "Product add successfully",
-            });
+              title: "Product added successfully",
+            })
           }
-        });
+        })
   }
 
   function handleDelete(getCurrentProductId) {
     dispatch(deleteProduct(getCurrentProductId)).then((data) => {
       if (data?.payload?.success) {
-        dispatch(fetchAllProducts());
+        dispatch(fetchAllProducts())
       }
-    });
+    })
   }
 
   function isFormValid() {
     return Object.keys(formData)
       .filter((currentKey) => currentKey !== "averageReview")
       .map((key) => formData[key] !== "")
-      .every((item) => item);
+      .every((item) => item)
   }
 
   useEffect(() => {
-    dispatch(fetchAllProducts());
-  }, [dispatch]);
+    dispatch(fetchAllProducts())
+  }, [dispatch])
 
-  console.log(productList, uploadedImageUrl, "productList");
+  const filteredProducts = productList.filter((product) =>
+    product.title.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
 
   return (
     <Fragment>
-      <div className="mb-5 w-full flex justify-end">
-        <Button onClick={() => setOpenCreateProductsDialog(true)}>
-          Add New Product
-        </Button>
+      <div className="mb-5 w-full flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="relative w-full sm:w-64">
+          <Input
+            type="text"
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+        </div>
+        <div className="flex gap-4">
+          <Button onClick={() => setOpenCreateProductsDialog(true)}>Add New Product</Button>
+          <Sheet open={openCategoryDialog} onOpenChange={setOpenCategoryDialog}>
+            <SheetTrigger asChild>
+              <Button variant="outline">Manage Categories</Button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Category Management</SheetTitle>
+              </SheetHeader>
+              <CategoryManagement />
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
-      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
-        {productList && productList.length > 0
-          ? productList.map((productItem) => (
-              <AdminProductTile
-                key={productItem}
-                setFormData={setFormData}
-                setOpenCreateProductsDialog={setOpenCreateProductsDialog}
-                setCurrentEditedId={setCurrentEditedId}
-                product={productItem}
-                handleDelete={handleDelete}
-              />
-            ))
-          : null}
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Image</TableHead>
+              <TableHead>Title</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Price</TableHead>
+              <TableHead>Stock</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((productItem) => (
+                <TableRow key={productItem._id}>
+                  <TableCell>
+                    <img
+                      src={productItem.image || "/placeholder.svg"}
+                      alt={productItem.title}
+                      className="w-16 h-16 object-cover"
+                    />
+                  </TableCell>
+                  <TableCell>{productItem.title}</TableCell>
+                  <TableCell>{productItem.category}</TableCell>
+                  <TableCell>${productItem.price}</TableCell>
+                  <TableCell>{productItem.totalStock}</TableCell>
+                  <TableCell>
+                    <Button
+                      onClick={() => {
+                        setFormData(productItem)
+                        setOpenCreateProductsDialog(true)
+                        setCurrentEditedId(productItem._id)
+                      }}
+                      className="mr-2"
+                    >
+                      Edit
+                    </Button>
+                    <Button variant="destructive" onClick={() => handleDelete(productItem._id)}>
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center">
+                  No products found
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
       <Sheet
         open={openCreateProductsDialog}
         onOpenChange={() => {
-          setOpenCreateProductsDialog(false);
-          setCurrentEditedId(null);
-          setFormData(initialFormData);
+          setOpenCreateProductsDialog(false)
+          setCurrentEditedId(null)
+          setFormData(initialFormData)
         }}
       >
         <SheetContent side="right" className="overflow-auto">
           <SheetHeader>
-            <SheetTitle>
-              {currentEditedId !== null ? "Edit Product" : "Add New Product"}
-            </SheetTitle>
+            <SheetTitle>{currentEditedId !== null ? "Edit Product" : "Add New Product"}</SheetTitle>
           </SheetHeader>
           <ProductImageUpload
             imageFile={imageFile}
@@ -160,7 +216,8 @@ function AdminProducts() {
         </SheetContent>
       </Sheet>
     </Fragment>
-  );
+  )
 }
 
-export default AdminProducts;
+export default AdminProducts
+
