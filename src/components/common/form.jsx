@@ -1,16 +1,11 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
+"use client"
+
+import { useEffect, useState } from "react"
+import { Input } from "../ui/input"
+import { Label } from "../ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import { Textarea } from "../ui/textarea"
+import { Button } from "../ui/button"
 
 function CommonForm({
   formControls,
@@ -19,22 +14,21 @@ function CommonForm({
   onSubmit,
   buttonText,
   isBtnDisabled,
-  fetchData, // 👈 Function to fetch data
+  fetchData, // Function to fetch data
 }) {
-  const [options, setOptions] = useState({}); // Store fetched options dynamically
+  const [options, setOptions] = useState({})
 
-  // Fetch data for select dropdowns when component mounts
   useEffect(() => {
     if (fetchData) {
       fetchData().then((data) => {
-        setOptions(data);
-      });
+        setOptions(data)
+      })
     }
-  }, [fetchData]);
+  }, [fetchData])
 
   function renderInputsByComponentType(getControlItem) {
-    let element = null;
-    const value = formData[getControlItem.name] || "";
+    let element = null
+    const value = formData[getControlItem.name] || ""
 
     switch (getControlItem.componentType) {
       case "input":
@@ -52,11 +46,11 @@ function CommonForm({
               })
             }
           />
-        );
-        break;
+        )
+        break
 
       case "select":
-        const selectOptions = options[getControlItem.name] || getControlItem.options || [];
+        const selectOptions = options[getControlItem.name] || getControlItem.options || []
 
         element = (
           <Select
@@ -74,7 +68,7 @@ function CommonForm({
             <SelectContent>
               {selectOptions.length > 0 ? (
                 selectOptions.map((optionItem) => (
-                  <SelectItem key={optionItem.id} value={optionItem.id}>
+                  <SelectItem key={optionItem.id} value={optionItem.label}>
                     {optionItem.label}
                   </SelectItem>
                 ))
@@ -83,9 +77,8 @@ function CommonForm({
               )}
             </SelectContent>
           </Select>
-        );
-
-        break;
+        )
+        break
 
       case "textarea":
         element = (
@@ -101,8 +94,8 @@ function CommonForm({
               })
             }
           />
-        );
-        break;
+        )
+        break
 
       default:
         element = (
@@ -119,11 +112,11 @@ function CommonForm({
               })
             }
           />
-        );
-        break;
+        )
+        break
     }
 
-    return element;
+    return element
   }
 
   return (
@@ -141,7 +134,8 @@ function CommonForm({
         {buttonText || "Submit"}
       </Button>
     </form>
-  );
+  )
 }
 
-export default CommonForm;
+export default CommonForm
+

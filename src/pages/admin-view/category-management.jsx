@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/hooks/use-toast"
+import PropTypes from "prop-types"
 
-export function CategoryManagement() {
+export function CategoryManagement({ onCategoryChange }) {
   const [categories, setCategories] = useState([])
   const [newCategory, setNewCategory] = useState("")
   const [editingCategory, setEditingCategory] = useState(null)
@@ -40,6 +41,7 @@ export function CategoryManagement() {
       if (response.data.success) {
         setNewCategory("")
         fetchCategories()
+        onCategoryChange()
         toast({
           title: "Category added successfully",
         })
@@ -62,6 +64,7 @@ export function CategoryManagement() {
       if (response.data.success) {
         setEditingCategory(null)
         fetchCategories()
+        onCategoryChange()
         toast({
           title: "Category updated successfully",
         })
@@ -81,6 +84,7 @@ export function CategoryManagement() {
       const response = await axios.delete(`https://reactive-zone-backend.vercel.app/api/admin/category/delete/${id}`)
       if (response.data.success) {
         fetchCategories()
+        onCategoryChange()
         toast({
           title: "Category deleted successfully",
         })
@@ -96,56 +100,62 @@ export function CategoryManagement() {
   }
 
   return (
-    <div>
-      <form onSubmit={handleAddCategory} className="mb-4">
+    <div className="space-y-4">
+      <form onSubmit={handleAddCategory} className="flex space-x-2">
         <Input
           type="text"
           value={newCategory}
           onChange={(e) => setNewCategory(e.target.value)}
           placeholder="New Category Name"
-          className="mr-2 mt-4"
+          className="flex-grow"
         />
-        <Button type="submit" className="mt-4">Add Category</Button>
+        <Button type="submit">Add</Button>
       </form>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Category Name</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {categories.map((category) => (
-            <TableRow key={category._id}>
-              <TableCell>
-                {editingCategory === category._id ? (
-                  <Input
-                    type="text"
-                    defaultValue={category.title}
-                    onBlur={(e) => handleEditCategory(category._id, e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        handleEditCategory(category._id, e.target.value)
-                      }
-                    }}
-                  />
-                ) : (
-                  category.title
-                )}
-              </TableCell>
-              <TableCell>
-                <Button onClick={() => setEditingCategory(category._id)} className="mr-2">
-                  Edit
-                </Button>
-                <Button variant="destructive" onClick={() => handleDeleteCategory(category._id)}>
-                  Delete
-                </Button>
-              </TableCell>
+      <div className="max-h-[60vh] overflow-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Category Name</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {categories.map((category) => (
+              <TableRow key={category._id}>
+                <TableCell>
+                  {editingCategory === category._id ? (
+                    <Input
+                      type="text"
+                      defaultValue={category.title}
+                      onBlur={(e) => handleEditCategory(category._id, e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          handleEditCategory(category._id, e.target.value)
+                        }
+                      }}
+                    />
+                  ) : (
+                    category.title
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Button onClick={() => setEditingCategory(category._id)} className="mr-2" size="sm">
+                    Edit
+                  </Button>
+                  <Button variant="destructive" onClick={() => handleDeleteCategory(category._id)} size="sm">
+                    Delete
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   )
+}
+
+CategoryManagement.propTypes = {
+  onCategoryChange: PropTypes.func.isRequired,
 }
 

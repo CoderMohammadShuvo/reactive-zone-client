@@ -11,8 +11,10 @@ import { Fragment, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { CategoryManagement } from "./category-management"
+import { BrandManagement } from "./brand-management"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
+import axios from "axios"
 
 const initialFormData = {
   image: null,
@@ -29,16 +31,57 @@ const initialFormData = {
 function AdminProducts() {
   const [openCreateProductsDialog, setOpenCreateProductsDialog] = useState(false)
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false)
+  const [openBrandDialog, setOpenBrandDialog] = useState(false)
   const [formData, setFormData] = useState(initialFormData)
   const [imageFile, setImageFile] = useState(null)
   const [uploadedImageUrl, setUploadedImageUrl] = useState("")
   const [imageLoadingState, setImageLoadingState] = useState(false)
   const [currentEditedId, setCurrentEditedId] = useState(null)
   const [searchTerm, setSearchTerm] = useState("")
+  const [categories, setCategories] = useState([])
+  const [brands, setBrands] = useState([])
 
   const { productList } = useSelector((state) => state.adminProducts)
   const dispatch = useDispatch()
   const { toast } = useToast()
+
+  useEffect(() => {
+    dispatch(fetchAllProducts())
+    fetchCategories()
+  }, [dispatch])
+
+  const fetchCategories = async () => {
+    try {
+      const categoryResponse = await axios.get("https://reactive-zone-backend.vercel.app/api/admin/category/get")
+      const brandResponse = await axios.get("https://reactive-zone-backend.vercel.app/api/admin/brand/get")
+
+      const categoryData = categoryResponse.data?.data.map((cat) => ({
+        id: cat._id,
+        label: cat.title,
+      }))
+
+      const brandData = brandResponse.data?.data.map((brand) => ({
+        id: brand._id,
+        label: brand.title,
+      }))
+
+      setCategories(categoryData)
+      setBrands(brandData)
+
+      return {
+        category: categoryData,
+        brand: brandData,
+      }
+    } catch (error) {
+      console.error("Error fetching categories and brands:", error)
+      toast({
+        title: "Error fetching data",
+        description: "Please try again later.",
+        variant: "destructive",
+      })
+      return { category: [], brand: [] }
+    }
+  }
 
   function onSubmit(event) {
     event.preventDefault()
@@ -92,13 +135,25 @@ function AdminProducts() {
       .every((item) => item)
   }
 
-  useEffect(() => {
-    dispatch(fetchAllProducts())
-  }, [dispatch])
-
   const filteredProducts = productList.filter((product) =>
     product.title.toLowerCase().includes(searchTerm.toLowerCase()),
   )
+
+  // Update the addProductFormElements with dynamic categories and brands
+  const updatedFormElements = addProductFormElements.map((element) => {
+    if (element.id === "category") {
+      return {
+        ...element,
+        options: categories,
+      }
+    } else if (element.id === "brand") {
+      return {
+        ...element,
+        options: brands,
+      }
+    }
+    return element
+  })
 
   return (
     <Fragment>
@@ -123,7 +178,18 @@ function AdminProducts() {
               <SheetHeader>
                 <SheetTitle>Category Management</SheetTitle>
               </SheetHeader>
-              <CategoryManagement />
+              <CategoryManagement onCategoryChange={fetchCategories} />
+            </SheetContent>
+          </Sheet>
+          <Sheet open={openBrandDialog} onOpenChange={setOpenBrandDialog}>
+            <SheetTrigger asChild>
+              <Button variant="outline">Manage Brands</Button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Brand Management</SheetTitle>
+              </SheetHeader>
+              <BrandManagement onBrandChange={fetchCategories} />
             </SheetContent>
           </Sheet>
         </div>
@@ -135,6 +201,7 @@ function AdminProducts() {
               <TableHead>Image</TableHead>
               <TableHead>Title</TableHead>
               <TableHead>Category</TableHead>
+              <TableHead>Brand</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Stock</TableHead>
               <TableHead>Actions</TableHead>
@@ -153,6 +220,7 @@ function AdminProducts() {
                   </TableCell>
                   <TableCell>{productItem.title}</TableCell>
                   <TableCell>{productItem.category}</TableCell>
+                  <TableCell>{productItem.brand}</TableCell>
                   <TableCell>${productItem.price}</TableCell>
                   <TableCell>{productItem.totalStock}</TableCell>
                   <TableCell>
@@ -174,7 +242,7 @@ function AdminProducts() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center">
+                <TableCell colSpan={7} className="text-center">
                   No products found
                 </TableCell>
               </TableRow>
@@ -209,8 +277,9 @@ function AdminProducts() {
               formData={formData}
               setFormData={setFormData}
               buttonText={currentEditedId !== null ? "Edit" : "Add"}
-              formControls={addProductFormElements}
+              formControls={updatedFormElements}
               isBtnDisabled={!isFormValid()}
+              fetchData={fetchCategories}
             />
           </div>
         </SheetContent>

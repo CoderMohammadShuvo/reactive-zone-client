@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Dialog } from "../ui/dialog";
+import { Input } from "@/components/ui/input"
 import {
   Table,
   TableBody,
@@ -12,6 +13,7 @@ import {
 } from "../ui/table";
 import AdminOrderDetailsView from "./order-details";
 import { useDispatch, useSelector } from "react-redux";
+import { Search } from "lucide-react"
 import {
   getAllOrdersForAdmin,
   getOrderDetailsForAdmin,
@@ -22,6 +24,7 @@ import { Badge } from "../ui/badge";
 function AdminOrdersView() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { orderList, orderDetails } = useSelector((state) => state.adminOrder);
+  const [searchTerm, setSearchTerm] = useState("")
   const dispatch = useDispatch();
 
   function handleFetchOrderDetails(getId) {
@@ -34,6 +37,9 @@ function AdminOrdersView() {
 
   console.log(orderList, "orderList");
 
+  const filteredProducts = orderList.filter((order) =>
+    order._id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   useEffect(() => {
     if (orderDetails !== null) setOpenDetailsDialog(true);
   }, [orderDetails]);
@@ -44,6 +50,16 @@ function AdminOrdersView() {
         <CardTitle>All Orders</CardTitle>
       </CardHeader>
       <CardContent>
+        <div className="relative w-full sm:w-64">
+          <Input
+            type="text"
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -57,8 +73,8 @@ function AdminOrdersView() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orderList && orderList.length > 0
-              ? orderList.map((orderItem) => (
+            {filteredProducts && filteredProducts.length > 0
+              ? filteredProducts.map((orderItem) => (
                   <TableRow key={orderItem}>
                     <TableCell>{orderItem?._id}</TableCell>
                     <TableCell>{orderItem?.orderDate.split("T")[0]}</TableCell>
