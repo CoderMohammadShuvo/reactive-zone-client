@@ -79,7 +79,7 @@ function ShoppingListing() {
   }
 
   function handleGetProductDetails(getCurrentProductId) {
-    console.log(getCurrentProductId);
+    console.log(getCurrentProductId, "current productId.");
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
@@ -142,6 +142,8 @@ function ShoppingListing() {
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
+
+  console.log(productDetails, "productDetails");
 
   console.log(productList, "productListproductListproductList");
 
