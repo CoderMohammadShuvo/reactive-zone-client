@@ -31,9 +31,9 @@ export const fetchProductDetails = createAsyncThunk(
   "/products/fetchProductDetails",
   async (id) => {
     const result = await axios.get(
-      `http://localhost:5000/api/shop/products/get/${id}`
+      `https://reactive-zone-backend.vercel.app/api/shop/products/get/${id}`
     );
-
+    console.log(result, "product result");
     return result?.data;
   }
 );
