@@ -138,12 +138,12 @@ function ShoppingHome() {
 
   return (
     <div className="flex flex-col min-h-screen pt-[100px]">
-     <div className="max-w-7xl mx-auto mt-4 px-4">
+     <div className="max-w-8xl mx-auto mt-4 px-4">
   <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
     {/* Left Large Image */}
     <div className="lg:col-span-2 h-[60vh] sm:h-auto">
       <img 
-        src="https://www.ryans.com/storage/sliders/Falgun-Fest-2025-Up-to-50000-tk-Discount-main-Slider_1738815702.webp" 
+        src="https://www.ryans.com/storage/sliders/Bkash-Offer-min2_1740205774.webp" 
         className="w-full h-full object-cover rounded-lg" 
         alt="Main Banner" 
       />
@@ -165,7 +165,7 @@ function ShoppingHome() {
   </div>
 </div>
       <section className="py-12 bg-gray-50 ">
-        <div className="px-4 max-w-7xl mx-auto">
+        <div className="px-4 max-w-8xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-8">
             Shop by category
           </h2>
@@ -189,7 +189,7 @@ function ShoppingHome() {
       </section>
 
       <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4 max-w-7xl ">
+        <div className="container mx-auto px-4 max-w-8xl ">
           <h2 className="text-3xl font-bold text-center mb-8">Shop by Brand</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {brandsWithIcon.map((brandItem) => (
@@ -209,7 +209,7 @@ function ShoppingHome() {
       </section>
 
       <section className="py-12">
-        <div className="container max-w-7xl mx-auto px-4">
+        <div className="container max-w-8xl mx-auto px-4">
           <h2 className="text-3xl  font-bold text-center mb-8">
             Feature Products
           </h2>

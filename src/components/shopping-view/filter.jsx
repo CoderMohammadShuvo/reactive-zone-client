@@ -21,10 +21,10 @@ function ProductFilter({ filters, handleFilter }) {
         {/* Price Range Filter */}
         <div className="w-full mt-4 flex flex-col space-y-2">
           <PriceRangeSlider
-            min={10}
-            max={10000}
+            min={0}
+            max={1000}
             onChange={handlePriceChange}
-            currencyText="$"
+            currencyText="৳"
           />
         </div>
       </div>

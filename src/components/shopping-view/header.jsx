@@ -51,17 +51,8 @@ function MenuItems() {
 
   return (
     <>
-      <div className="">
-        <ul className="flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row">
-          <li>phone</li>
-          <li>mail</li>
-          <li>bigsale</li>
-          <li>offers</li>
-          <li>newArivall</li>
-          <li>help</li>
-        </ul>
-      </div>
-      <nav className="flex flex-col mb-3 mt-2 lg:mb-0 lg:items-center gap-6 lg:flex-row ">
+  
+      <nav className="flex flex-col mb-3 mt-2 lg:mb-0 lg:items-center gap-6 lg:flex-row  w-full">
         {shoppingViewHeaderMenuItems.map((menuItem) => (
           <Label
             onClick={() => handleNavigate(menuItem)}
@@ -148,7 +139,7 @@ function ShoppingHeader() {
   return (
     <div className="mb-4">
       <header className=" top-0 z-40 w-full border-b bg-background fixed ">
-        <div className="flex h-20 items-center justify-between px-4 md:px-6 max-w-7xl mx-auto ">
+        <div className="flex h-20 items-center justify-between px-4 md:px-6 max-w-8xl mx-auto ">
           <Link to="/shop/home" className="flex items-center gap-2">
             <HousePlug className="h-6 w-6" />
             <span className="font-bold">Reactive Zone</span>

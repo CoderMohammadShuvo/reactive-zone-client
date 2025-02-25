@@ -1,240 +1,93 @@
-// import { Button } from "@/components/ui/button";
-// import ProductImageUpload from "@/components/admin-view/image-upload";
-// import { addFeatureImage, getFeatureImages } from "@/store/common-slice";
-// import { useEffect, useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import {
-//   Card,
-//   CardContent,
-//   CardFooter,
-//   CardHeader,
-// } from "@/components/ui/card";
-// import { format } from "date-fns";
+"use client"
 
-// function AdminDashboard() {
-//   const [imageFile, setImageFile] = useState(null);
-//   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
-//   const [imageLoadingState, setImageLoadingState] = useState(false);
-//   const dispatch = useDispatch();
-//   const { featureImageList } = useSelector((state) => state.commonFeature);
+import { useEffect, useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Bar } from "react-chartjs-2"
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js"
 
-//   console.log(uploadedImageUrl, "uploadedImageUrl");
-
-//   function handleUploadFeatureImage() {
-//     dispatch(addFeatureImage(uploadedImageUrl)).then((data) => {
-//       if (data?.payload?.success) {
-//         dispatch(getFeatureImages());
-//         setImageFile(null);
-//         setUploadedImageUrl("");
-//       }
-//     });
-//   }
-
-//   function handleEditImage(imageId) {
-//     // Handle image edit logic here
-//     console.log("Edit clicked for image ID:", imageId);
-//   }
-
-//   function handleDeleteImage(imageId) {
-//     // Handle image delete logic here
-//     console.log("Delete clicked for image ID:", imageId);
-//   }
-
-//   useEffect(() => {
-//     dispatch(getFeatureImages());
-//   }, [dispatch]);
-
-//   console.log(featureImageList, "featureImageList");
-
-//   return (
-//     <div>
-//       <ProductImageUpload
-//         imageFile={imageFile}
-//         setImageFile={setImageFile}
-//         uploadedImageUrl={uploadedImageUrl}
-//         setUploadedImageUrl={setUploadedImageUrl}
-//         setImageLoadingState={setImageLoadingState}
-//         imageLoadingState={imageLoadingState}
-//         isCustomStyling={true}
-//       />
-//       <Button
-//         onClick={handleUploadFeatureImage}
-//         className={`mt-5 mb-5 ${
-//           imageFile ? "hover:bg-green-700" : "cursor-not-allowed opacity-50"
-//         }`}
-//         disabled={!imageFile}
-//       >
-//         Upload
-//       </Button>
-//       <div className="flex flex-col gap-4 mt-5">
-//         <h1 className="text-4xl font-semibold text-black">Uploaded Images..</h1>
-//         {featureImageList && featureImageList.length > 0 ? (
-//           featureImageList.map((featureImgItem) => (
-//             <Card key={featureImgItem.id} className="relative">
-//               <CardHeader>
-//                 <h3 className="text-lg font-bold">Image Uploaded At..</h3>
-//                 <p>
-//                   {format(
-//                     new Date(featureImgItem.createdAt),
-//                     "dd/MM/yyyy hh:mm a"
-//                   )}
-//                 </p>
-//               </CardHeader>
-//               <CardContent>
-//                 <img
-//                   src={featureImgItem.image}
-//                   alt={`Feature Image ${featureImgItem.id}`}
-//                   className="w-full mt-2 border-2 h-full object-cover rounded-lg"
-//                 />
-//               </CardContent>
-//               <CardFooter className="flex justify-end gap-2">
-//                 <Button
-//                   variant="outline"
-//                   size="sm"
-//                   onClick={() => handleEditImage(featureImgItem.id)}
-//                 >
-//                   Edit
-//                 </Button>
-//                 <Button
-//                   variant="destructive"
-//                   size="sm"
-//                   onClick={() => handleDeleteImage(featureImgItem.id)}
-//                 >
-//                   Delete
-//                 </Button>
-//               </CardFooter>
-//             </Card>
-//           ))
-//         ) : (
-//           <p className="text-gray-500">No images uploaded yet.</p>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default AdminDashboard;
-
-import { Button } from "@/components/ui/button";
-import ProductImageUpload from "@/components/admin-view/image-upload";
-import {
-  addFeatureImage,
-  getFeatureImages,
-  updateFeatureImage,
-  deleteFeatureImage,
-} from "@/store/common-slice";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { format } from "date-fns";
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 function AdminDashboard() {
-  const [imageFile, setImageFile] = useState(null);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
-  const [imageLoadingState, setImageLoadingState] = useState(false);
-
-  const dispatch = useDispatch();
-  const { featureImageList } = useSelector((state) => state.commonFeature);
-
-  console.log(uploadedImageUrl, "uploadedImageUrl");
-
-  function handleUploadFeatureImage() {
-    {
-      // Add a new image
-      dispatch(addFeatureImage(uploadedImageUrl)).then((data) => {
-        if (data?.payload?.success) {
-          dispatch(getFeatureImages());
-          resetUploadState();
-        }
-      });
-    }
-  }
-
-  function handleDeleteImage(imageId) {
-    dispatch(deleteFeatureImage(imageId)).then((data) => {
-      if (data?.payload?.success) {
-        dispatch(getFeatureImages());
-        resetUploadState();
-      }
-    });
-  }
-
-  function resetUploadState() {
-    setImageFile(null);
-    setUploadedImageUrl("");
-  }
+  const [totalSales, setTotalSales] = useState(0)
+  const [totalCustomers, setTotalCustomers] = useState(0)
+  const [totalOrders, setTotalOrders] = useState(0)
 
   useEffect(() => {
-    dispatch(getFeatureImages());
-  }, [dispatch]);
+    // Fetch data from your API here
+    // For now, we'll use dummy data
+    setTotalSales(50000)
+    setTotalCustomers(1000)
+    setTotalOrders(500)
+  }, [])
 
-  console.log(featureImageList, "featureImageList");
+  const chartData = {
+    labels: ["January", "February", "March", "April", "May", "June"],
+    datasets: [
+      {
+        label: "Sales",
+        data: [12, 19, 3, 5, 2, 3],
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
+      },
+    ],
+  }
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" ,
+      },
+      title: {
+        display: true,
+        text: "Monthly Sales",
+      },
+    },
+  }
 
   return (
-    <div>
-      <ProductImageUpload
-        imageFile={imageFile}
-        setImageFile={setImageFile}
-        uploadedImageUrl={uploadedImageUrl}
-        setUploadedImageUrl={setUploadedImageUrl}
-        setImageLoadingState={setImageLoadingState}
-        imageLoadingState={imageLoadingState}
-        isCustomStyling={true}
-      />
-      <Button
-        onClick={handleUploadFeatureImage}
-        className={`mt-5 mb-5 ${
-          uploadedImageUrl
-            ? "hover:bg-green-700"
-            : "cursor-not-allowed opacity-50"
-        }`}
-        disabled={!uploadedImageUrl}
-      >
-        Upload
-      </Button>
-      <div className="flex flex-col gap-4 mt-5">
-        <h1 className="text-4xl font-semibold text-black">Uploaded Images..</h1>
-        {featureImageList && featureImageList.length > 0 ? (
-          featureImageList.map((featureImgItem) => (
-            <Card key={featureImgItem.id} className="relative">
-              <CardHeader>
-                <h3 className="text-lg font-bold">Image Uploaded At..</h3>
-                <p>
-                  {format(
-                    new Date(featureImgItem.createdAt),
-                    "dd/MM/yyyy hh:mm a"
-                  )}
-                </p>
-              </CardHeader>
-              <CardContent>
-                <img
-                  src={featureImgItem.image}
-                  alt={`Feature Image ${featureImgItem?._id}`}
-                  className="w-full mt-2 border-2 h-full object-cover rounded-lg"
-                />
-              </CardContent>
-              <CardFooter className="flex justify-end gap-2">
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDeleteImage(featureImgItem?._id)}
-                >
-                  Delete
-                </Button>
-              </CardFooter>
-            </Card>
-          ))
-        ) : (
-          <p className="text-gray-500">No images uploaded yet.</p>
-        )}
+    <div className="p-6">
+      {/* <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1> */}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Sales</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">${totalSales.toLocaleString()}</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Customers</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{totalCustomers.toLocaleString()}</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Orders</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{totalOrders.toLocaleString()}</p>
+          </CardContent>
+        </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Sales Chart</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Bar data={chartData} options={chartOptions} />
+        </CardContent>
+      </Card>
     </div>
-  );
+  )
 }
 
-export default AdminDashboard;
+export default AdminDashboard
+

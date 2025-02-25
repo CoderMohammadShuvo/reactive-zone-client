@@ -17,7 +17,7 @@ import { Search } from "lucide-react"
 import axios from "axios"
 
 const initialFormData = {
-  image: null,
+  image: [],
   title: "",
   description: "",
   category: "",
@@ -34,7 +34,7 @@ function AdminProducts() {
   const [openBrandDialog, setOpenBrandDialog] = useState(false)
   const [formData, setFormData] = useState(initialFormData)
   const [imageFile, setImageFile] = useState(null)
-  const [uploadedImageUrl, setUploadedImageUrl] = useState("")
+  const [uploadedImageUrl, setUploadedImageUrl] = useState([]);
   const [imageLoadingState, setImageLoadingState] = useState(false)
   const [currentEditedId, setCurrentEditedId] = useState(null)
   const [searchTerm, setSearchTerm] = useState("")
@@ -83,41 +83,47 @@ function AdminProducts() {
     }
   }
 
+  // function onSubmit(event) {
+  //   event.preventDefault()
+
+  //   currentEditedId !== null
+  //     ? dispatch(
+  //         editProduct({
+  //           id: currentEditedId,
+  //           formData,
+  //         }),
+  //       ).then((data) => {
+  //         console.log(data, "edit")
+
+  //         if (data?.payload?.success) {
+  //           dispatch(fetchAllProducts())
+  //           setFormData(initialFormData)
+  //           setOpenCreateProductsDialog(false)
+  //           setCurrentEditedId(null)
+  //         }
+  //       })
+  //     : dispatch(
+  //         addNewProduct({
+  //           ...formData,
+  //           image: uploadedImageUrl,
+  //         }),
+  //       ).then((data) => {
+  //         if (data?.payload?.success) {
+  //           dispatch(fetchAllProducts())
+  //           setOpenCreateProductsDialog(false)
+  //           setImageFile(null)
+  //           setFormData(initialFormData)
+  //           toast({
+  //             title: "Product added successfully",
+  //           })
+  //         }
+  //       })
+  // }
+
   function onSubmit(event) {
-    event.preventDefault()
-
-    currentEditedId !== null
-      ? dispatch(
-          editProduct({
-            id: currentEditedId,
-            formData,
-          }),
-        ).then((data) => {
-          console.log(data, "edit")
-
-          if (data?.payload?.success) {
-            dispatch(fetchAllProducts())
-            setFormData(initialFormData)
-            setOpenCreateProductsDialog(false)
-            setCurrentEditedId(null)
-          }
-        })
-      : dispatch(
-          addNewProduct({
-            ...formData,
-            image: uploadedImageUrl,
-          }),
-        ).then((data) => {
-          if (data?.payload?.success) {
-            dispatch(fetchAllProducts())
-            setOpenCreateProductsDialog(false)
-            setImageFile(null)
-            setFormData(initialFormData)
-            toast({
-              title: "Product added successfully",
-            })
-          }
-        })
+    event.preventDefault();
+    console.log("Form data", formData + uploadedImageUrl);
+    // console.log("Image file", imageFile);
   }
 
   function handleDelete(getCurrentProductId) {
@@ -175,8 +181,8 @@ function AdminProducts() {
               <Button variant="outline">Manage Categories</Button>
             </SheetTrigger>
             <SheetContent>
-              <SheetHeader>
-                <SheetTitle>Category Management</SheetTitle>
+              <SheetHeader className="mb-4">
+                <SheetTitle >Category Management</SheetTitle>
               </SheetHeader>
               <CategoryManagement onCategoryChange={fetchCategories} />
             </SheetContent>
@@ -186,7 +192,7 @@ function AdminProducts() {
               <Button variant="outline">Manage Brands</Button>
             </SheetTrigger>
             <SheetContent>
-              <SheetHeader>
+              <SheetHeader className="mb-4">
                 <SheetTitle>Brand Management</SheetTitle>
               </SheetHeader>
               <BrandManagement onBrandChange={fetchCategories} />
@@ -263,13 +269,14 @@ function AdminProducts() {
             <SheetTitle>{currentEditedId !== null ? "Edit Product" : "Add New Product"}</SheetTitle>
           </SheetHeader>
           <ProductImageUpload
-            imageFile={imageFile}
-            setImageFile={setImageFile}
+            imageFiles={imageFile}
+            setImageFiles={setImageFile}
             uploadedImageUrl={uploadedImageUrl}
             setUploadedImageUrl={setUploadedImageUrl}
-            setImageLoadingState={setImageLoadingState}
-            imageLoadingState={imageLoadingState}
+            setImageLoadingStates={setImageLoadingState}
+            imageLoadingStates={imageLoadingState}
             isEditMode={currentEditedId !== null}
+            maxImages={4}
           />
           <div className="py-6">
             <CommonForm

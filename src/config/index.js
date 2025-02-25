@@ -1,3 +1,5 @@
+import { Laptop } from "lucide-react";
+
 export const registerFormControls = [
   {
     name: "userName",
@@ -58,11 +60,11 @@ export const addProductFormElements = [
     name: "category",
     componentType: "select",
     options: [
-      { id: "men", label: "Men" },
-      { id: "women", label: "Women" },
-      { id: "kids", label: "Kids" },
-      { id: "accessories", label: "Accessories" },
-      { id: "footwear", label: "Footwear" },
+      { id: "laptop", label: "Laptop" },
+      { id: "desktopandserver", label: "Desktop and Server" },
+      { id: "gaming", label: "Gaming" },
+      { id: "monitor", label: "Monitor" },
+      { id: "tabletpc", label: "Tablet PC" },
     ],
   },
   {
@@ -163,19 +165,28 @@ export const brandOptionsMap = {
 
 export const filterOptions = {
   category: [
-    { id: "men", label: "Men" },
-    { id: "women", label: "Women" },
-    { id: "kids", label: "Kids" },
-    { id: "accessories", label: "Accessories" },
-    { id: "footwear", label: "Footwear" },
+    { id: "Laptop", label: "Laptop", icon: Laptop },
+    { id: "Desktop and Server", label: "Desktop and Server" },
+    { id: "Gaming", label: "Gaming" },
+    { id: "Monitor", label: "Monitor" },
+    { id: "Tablet PC", label: "Tablet PC" },
+    { id: "Printer", label: "Printer" },
+    { id: "Camera", label: "Camera" },
+    { id: "Security System", label: "Security System" },
+    { id: "Network", label: "Network" },
+    { id: "Sound System", label: "Sound System" },
   ],
   brand: [
-    { id: "nike", label: "Nike" },
-    { id: "adidas", label: "Adidas" },
-    { id: "puma", label: "Puma" },
-    { id: "levi", label: "Levi's" },
-    { id: "zara", label: "Zara" },
-    { id: "h&m", label: "H&M" },
+    { id: "Asus", label: "Asus" },
+    { id: "Acer", label: "Acer" },
+    { id: "Apple", label: "Apple" },
+    { id: "Dell", label: "Dell" },
+    { id: "Gigabyte", label: "Gigabyte" },
+    { id: "HP", label: "HP" },
+    { id: "Lenovo", label: "Lenovo" },
+    { id: "Microsoft", label: "Microsoft" },
+    { id: "MSI", label: "MSI" },
+    { id: "Smart", label: "Smart" },
   ],
 };
 

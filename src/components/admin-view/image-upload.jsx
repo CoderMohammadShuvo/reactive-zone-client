@@ -1,10 +1,12 @@
-import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { useEffect, useRef } from "react";
-import { Button } from "../ui/button";
-import axios from "axios";
-import { Skeleton } from "../ui/skeleton";
+"use client"
+
+import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react"
+import { Input } from "../ui/input"
+import { Label } from "../ui/label"
+import { useEffect, useRef, useState, useCallback } from "react"
+import { Button } from "../ui/button"
+import axios from "axios"
+import { Skeleton } from "../ui/skeleton"
 
 function ProductImageUpload({
   imageFile,
@@ -15,220 +17,217 @@ function ProductImageUpload({
   setUploadedImageUrl,
   isEditMode,
   isCustomStyling = false,
+  maxImages = 4,
+  onMultipleUploadComplete, // New prop for handling multiple URLs
 }) {
-  const inputRef = useRef(null);
+  const inputRef = useRef(null)
+  const [imageFiles, setImageFiles] = useState(imageFile ? [imageFile] : [])
+  const [imageLoadingStates, setImageLoadingStates] = useState(imageLoadingState ? [imageLoadingState] : [])
+  const [uploadedImageUrls, setUploadedImageUrls] = useState(uploadedImageUrl ? [uploadedImageUrl] : [])
+  const [isUploading, setIsUploading] = useState(false)
 
   function handleImageFileChange(event) {
-    console.log(event.target.files, "event.target.files");
-    const selectedFile = event.target.files?.[0];
-    console.log(selectedFile);
-
-    if (selectedFile) setImageFile(selectedFile);
+    const selectedFiles = Array.from(event.target.files || [])
+    console.log("Selected files:", selectedFiles)
+    addNewFiles(selectedFiles)
   }
+
   function handleDragOver(event) {
-    event.preventDefault();
+    event.preventDefault()
   }
 
   function handleDrop(event) {
-    event.preventDefault();
-    const droppedFile = event.dataTransfer.files?.[0];
-    if (droppedFile) setImageFile(droppedFile);
+    event.preventDefault()
+    const droppedFiles = Array.from(event.dataTransfer.files || [])
+    console.log("Dropped files:", droppedFiles)
+    addNewFiles(droppedFiles)
   }
 
-  function handleRemoveImage() {
-    setImageFile(null);
-    if (inputRef.current) {
-      inputRef.current.value = "";
+  function addNewFiles(newFiles) {
+    const remainingSlots = maxImages - imageFiles.length
+    const filesToAdd = newFiles.slice(0, remainingSlots)
+
+    setImageFiles((prevFiles) => [...prevFiles, ...filesToAdd])
+    setImageLoadingStates((prevStates) => [...prevStates, ...filesToAdd.map(() => true)])
+    setUploadedImageUrls((prevUrls) => [...prevUrls, ...filesToAdd.map(() => "")])
+    setIsUploading(true)
+
+    // Update single image state for backward compatibility
+    if (filesToAdd.length > 0) {
+      setImageFile(filesToAdd[0])
+      setImageLoadingState(true)
     }
   }
 
-  async function uploadImageToCloudinary() {
-    setImageLoadingState(true);
-    const data = new FormData();
-    data.append("my_file", imageFile);
-    const response = await axios.post(
-      "https://reactive-zone-backend.vercel.app/api/admin/products/upload-image",
-      data
-    );
-    console.log(response, "response");
+  function handleRemoveImage(index) {
+    setImageFiles((prevFiles) => prevFiles.filter((_, i) => i !== index))
+    setImageLoadingStates((prevStates) => prevStates.filter((_, i) => i !== index))
+    setUploadedImageUrls((prevUrls) => {
+      const newUrls = prevUrls.filter((_, i) => i !== index)
+      // Notify parent component of updated URLs
+      if (onMultipleUploadComplete) {
+        onMultipleUploadComplete(newUrls)
+      }
+      return newUrls
+    })
 
-    if (response?.data?.success) {
-      setUploadedImageUrl(response.data.result.url);
-      setImageLoadingState(false);
+    // Update single image state for backward compatibility
+    if (index === 0) {
+      setImageFile(null)
+      setImageLoadingState(false)
+      setUploadedImageUrl("")
     }
   }
+
+  const uploadImageToCloudinary = useCallback(
+    async (file, index) => {
+      setImageLoadingStates((prevStates) => {
+        const newStates = [...prevStates]
+        newStates[index] = true
+        return newStates
+      })
+
+      const data = new FormData()
+      data.append("my_file", file)
+
+      try {
+        const response = await axios.post(
+          "https://reactive-zone-backend.vercel.app/api/admin/products/upload-image",
+          data,
+        )
+
+        if (response?.data?.success) {
+          setUploadedImageUrls((prevUrls) => {
+            const newUrls = [...prevUrls]
+            newUrls[index] = response.data.result.url
+
+            // Check if all uploads are complete
+            const allUploaded = newUrls.every((url) => url !== "")
+            if (allUploaded && onMultipleUploadComplete) {
+              onMultipleUploadComplete(newUrls)
+              setIsUploading(false)
+            }
+
+            return newUrls
+          })
+
+          // Update single image state for backward compatibility
+          if (index === 0) {
+            setUploadedImageUrl(response.data.result.url)
+          }
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error)
+        setIsUploading(false)
+      } finally {
+        setImageLoadingStates((prevStates) => {
+          const newStates = [...prevStates]
+          newStates[index] = false
+          return newStates
+        })
+
+        // Update single image state for backward compatibility
+        if (index === 0) {
+          setImageLoadingState(false)
+        }
+      }
+    },
+    [setImageLoadingState, setUploadedImageUrl, onMultipleUploadComplete],
+  )
 
   useEffect(() => {
-    if (imageFile !== null) uploadImageToCloudinary();
-  }, [imageFile]);
+    if (!isUploading) return
+    console.log("Uploading images...", uploadedImageUrls );
+    imageFiles.forEach((file, index) => {
+      if (!uploadedImageUrls[index]) {
+        uploadImageToCloudinary(file, index)
+      }
+    })
+  }, [imageFiles, uploadedImageUrls, uploadImageToCloudinary, isUploading])
 
   return (
-    <div
-      className={`w-full  mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}
-    >
-      <Label className="text-lg font-semibold mb-2 block">Upload Image</Label>
+    <div className={`w-full mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}>
+      <Label className="text-lg font-semibold mb-2 block">Upload Images</Label>
       <div
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        className={`${
-          isEditMode ? "opacity-60" : ""
-        } border-2 border-dashed rounded-lg p-4`}
+        className={`${isEditMode ? "opacity-60" : ""} border-2 border-dashed rounded-lg p-4`}
       >
         <Input
           id="image-upload"
           type="file"
+          multiple
           className="hidden"
           ref={inputRef}
           onChange={handleImageFileChange}
-          disabled={isEditMode}
+          disabled={isEditMode || imageFiles.length >= maxImages}
+          accept="image/*"
         />
-        {!imageFile ? (
+        {imageFiles.length === 0 ? (
           <Label
             htmlFor="image-upload"
             className={`${
-              isEditMode ? "cursor-not-allowed" : ""
-            } flex flex-col items-center justify-center h-32 cursor-pointer`}
+              isEditMode || imageFiles.length >= maxImages ? "cursor-not-allowed" : "cursor-pointer"
+            } flex flex-col items-center justify-center h-32`}
           >
             <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
-            <span>Drag & drop or click to upload image</span>
+            <span>Drag & drop or click to upload images</span>
+            <span className="text-sm text-muted-foreground mt-2">(Max {maxImages} images)</span>
           </Label>
-        ) : imageLoadingState ? (
-          <Skeleton className="h-10 bg-gray-100" />
         ) : (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <FileIcon className="w-8 text-primary mr-2 h-8" />
-            </div>
-            <p className="text-sm font-medium">{imageFile.name}</p>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground"
-              onClick={handleRemoveImage}
-            >
-              <XIcon className="w-4 h-4" />
-              <span className="sr-only">Remove File</span>
-            </Button>
+          <div className="space-y-2">
+            {imageFiles.map((file, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <FileIcon className="w-8 text-primary mr-2 h-8" />
+                  <div className="flex flex-col">
+                    <p className="text-sm font-medium">{file.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {uploadedImageUrls[index] ? "Uploaded" : "Uploading..."}
+                    </p>
+                  </div>
+                </div>
+                {imageLoadingStates[index] ? (
+                  <Skeleton className="h-8 w-8 bg-gray-100" />
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:text-foreground"
+                    onClick={() => handleRemoveImage(index)}
+                  >
+                    <XIcon className="w-4 h-4" />
+                    <span className="sr-only">Remove File</span>
+                  </Button>
+                )}
+              </div>
+            ))}
+            {imageFiles.length < maxImages && (
+              <Label
+                htmlFor="image-upload"
+                className="flex items-center justify-center h-12 border-2 border-dashed rounded-lg cursor-pointer"
+              >
+                <UploadCloudIcon className="w-6 h-6 text-muted-foreground mr-2" />
+                <span>Add more images</span>
+              </Label>
+            )}
           </div>
         )}
       </div>
+
+      {/* Debug Information */}
+      <div className="mt-4 text-xs text-muted-foreground">
+        <p>Total files: {imageFiles.length}</p>
+        <p>Uploaded URLs: {uploadedImageUrls.filter(Boolean).length}</p>
+        <p>Loading states: {imageLoadingStates.filter(Boolean).length} active</p>
+      </div>
     </div>
-  );
+  )
 }
 
-export default ProductImageUpload;
+export default ProductImageUpload
 
-// import { Button } from "@/components/ui/button";
-// import {
-//   addFeatureImage,
-//   getFeatureImages,
-//   deleteFeatureImage,
-//   updateFeatureImage,
-// } from "@/store/common-slice";
-// import { useEffect, useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
 
-// function AdminDashboard() {
-//   const [imageFile, setImageFile] = useState(null);
-//   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
-//   const [imageLoadingState, setImageLoadingState] = useState(false);
-//   const [isEditMode, setIsEditMode] = useState(false); // New state to track edit mode
-//   const [editingImageId, setEditingImageId] = useState(null); // Track the image being edited
-//   const dispatch = useDispatch();
-//   const { featureImageList } = useSelector((state) => state.commonFeature);
 
-//   // Function to handle image upload and saving
-//   function handleUploadFeatureImage() {
-//     if (isEditMode && editingImageId) {
-//       dispatch(
-//         updateFeatureImage({ id: editingImageId, image: uploadedImageUrl })
-//       ).then((data) => {
-//         if (data?.payload?.success) {
-//           dispatch(getFeatureImages());
-//           resetImageState();
-//         }
-//       });
-//     } else {
-//       dispatch(addFeatureImage(uploadedImageUrl)).then((data) => {
-//         if (data?.payload?.success) {
-//           dispatch(getFeatureImages());
-//           resetImageState();
-//         }
-//       });
-//     }
-//   }
 
-//   // Function to handle deleting an image
-//   function handleDeleteFeatureImage(imageId) {
-//     dispatch(deleteFeatureImage(imageId)).then((data) => {
-//       if (data?.payload?.success) {
-//         dispatch(getFeatureImages());
-//       }
-//     });
-//   }
 
-//   // Reset image states after upload or update
-//   function resetImageState() {
-//     setImageFile(null);
-//     setUploadedImageUrl("");
-//     setIsEditMode(false);
-//     setEditingImageId(null);
-//   }
-
-//   useEffect(() => {
-//     dispatch(getFeatureImages());
-//   }, [dispatch]);
-
-//   return (
-//     <div>
-//       <ProductImageUpload
-//         imageFile={imageFile}
-//         setImageFile={setImageFile}
-//         uploadedImageUrl={uploadedImageUrl}
-//         setUploadedImageUrl={setUploadedImageUrl}
-//         setImageLoadingState={setImageLoadingState}
-//         imageLoadingState={imageLoadingState}
-//         isCustomStyling={true}
-//         isEditMode={isEditMode} // Pass down edit mode flag
-//       />
-//       <Button onClick={handleUploadFeatureImage} className="mt-5 w-full mb-5">
-//         {isEditMode ? "Update Image" : "Upload"}
-//       </Button>
-
-//       <h1 className="text-2xl text-black">Uploaded Images..</h1>
-//       <div className="grid grid-cols-4 gap-4 mt-5">
-//         {featureImageList && featureImageList.length > 0
-//           ? featureImageList.map((featureImgItem) => (
-//               <div className="relative" key={featureImgItem.id}>
-//                 <img
-//                   src={featureImgItem.image}
-//                   className="w-full mt-2 border-2 h-full object-cover rounded-t-lg"
-//                   alt="Feature"
-//                 />
-//                 <div className="absolute top-0 right-0 p-2">
-//                   <Button
-//                     onClick={() => {
-//                       setIsEditMode(true);
-//                       setEditingImageId(featureImgItem.id);
-//                       setUploadedImageUrl(featureImgItem.image); // Set the current image to edit
-//                     }}
-//                     className="mr-2"
-//                   >
-//                     Edit
-//                   </Button>
-//                   <Button
-//                     onClick={() => handleDeleteFeatureImage(featureImgItem.id)}
-//                     className="bg-red-500"
-//                   >
-//                     Delete
-//                   </Button>
-//                 </div>
-//               </div>
-//             ))
-//           : null}
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default AdminDashboard;

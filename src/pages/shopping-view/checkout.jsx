@@ -93,7 +93,7 @@ function ShoppingCheckout() {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col max-w-8xl mx-auto">
       <div className="relative h-[300px] w-full overflow-hidden">
         <img src={img} className="h-full w-full object-cover object-center" />
       </div>
