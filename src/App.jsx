@@ -25,6 +25,7 @@ import SearchProducts from "./pages/shopping-view/search";
 import PaymentFailed from "./pages/shopping-view/payment-fail";
 import AllUsersForAdmin from "./pages/admin-view/all-users";
 import { CategoryManagement } from "./pages/admin-view/category-management";
+import Categories from "./pages/shopping-view/categories";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -70,7 +71,7 @@ function App() {
           <Route path="register" element={<AuthRegister />} />
         </Route>
 
-       {/* <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+        {/* <CheckAuth isAuthenticated={isAuthenticated} user={user}>
             <AdminLayout />
             </CheckAuth> */}
 
@@ -92,6 +93,7 @@ function App() {
         >
           <Route path="home" element={<ShoppingHome />} />
           <Route path="listing" element={<ShoppingListing />} />
+          <Route path="categories" element={<Categories />} />
           <Route path="admin/dashboard" element={<AdminDashboard />} />
           <Route path="checkout" element={<ShoppingCheckout />} />
           <Route path="account" element={<ShoppingAccount />} />
