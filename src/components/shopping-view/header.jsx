@@ -34,7 +34,8 @@ function MenuItems() {
     const currentFilter =
       getCurrentMenuItem.id !== "home" &&
       getCurrentMenuItem.id !== "products" &&
-      getCurrentMenuItem.id !== "search"
+      getCurrentMenuItem.id !== "search" &&
+      getCurrentMenuItem.id !== "categories"
         ? {
             category: [getCurrentMenuItem.id],
           }
@@ -51,7 +52,6 @@ function MenuItems() {
 
   return (
     <>
-  
       <nav className="flex flex-col mb-3 mt-2 lg:mb-0 lg:items-center gap-6 lg:flex-row  w-full">
         {shoppingViewHeaderMenuItems.map((menuItem) => (
           <Label
