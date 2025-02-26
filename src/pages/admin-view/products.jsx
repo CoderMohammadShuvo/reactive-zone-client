@@ -122,7 +122,7 @@ function AdminProducts() {
 
   function onSubmit(event) {
     event.preventDefault();
-    console.log("Form data", formData + uploadedImageUrl);
+    console.log("Form data", uploadedImageUrl);
     // console.log("Image file", imageFile);
   }
 

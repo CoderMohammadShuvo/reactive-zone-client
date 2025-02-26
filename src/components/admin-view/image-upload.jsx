@@ -1,12 +1,12 @@
 "use client"
 
-import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react"
-import { Input } from "../ui/input"
-import { Label } from "../ui/label"
 import { useEffect, useRef, useState, useCallback } from "react"
-import { Button } from "../ui/button"
+import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import axios from "axios"
-import { Skeleton } from "../ui/skeleton"
 
 function ProductImageUpload({
   imageFile,
@@ -18,7 +18,7 @@ function ProductImageUpload({
   isEditMode,
   isCustomStyling = false,
   maxImages = 4,
-  onMultipleUploadComplete, // New prop for handling multiple URLs
+  onMultipleUploadComplete,
 }) {
   const inputRef = useRef(null)
   const [imageFiles, setImageFiles] = useState(imageFile ? [imageFile] : [])
@@ -49,10 +49,9 @@ function ProductImageUpload({
 
     setImageFiles((prevFiles) => [...prevFiles, ...filesToAdd])
     setImageLoadingStates((prevStates) => [...prevStates, ...filesToAdd.map(() => true)])
-    setUploadedImageUrls((prevUrls) => [...prevUrls, ...filesToAdd.map(() => "")])
+    setUploadedImageUrls((prevUrls) => [...prevUrls, ...filesToAdd.map(() => null)])
     setIsUploading(true)
 
-    // Update single image state for backward compatibility
     if (filesToAdd.length > 0) {
       setImageFile(filesToAdd[0])
       setImageLoadingState(true)
@@ -64,14 +63,13 @@ function ProductImageUpload({
     setImageLoadingStates((prevStates) => prevStates.filter((_, i) => i !== index))
     setUploadedImageUrls((prevUrls) => {
       const newUrls = prevUrls.filter((_, i) => i !== index)
-      // Notify parent component of updated URLs
       if (onMultipleUploadComplete) {
-        onMultipleUploadComplete(newUrls)
+        const validUrls = newUrls.filter((url) => url !== null)
+        onMultipleUploadComplete(validUrls)
       }
       return newUrls
     })
 
-    // Update single image state for backward compatibility
     if (index === 0) {
       setImageFile(null)
       setImageLoadingState(false)
@@ -101,23 +99,25 @@ function ProductImageUpload({
             const newUrls = [...prevUrls]
             newUrls[index] = response.data.result.url
 
-            // Check if all uploads are complete
-            const allUploaded = newUrls.every((url) => url !== "")
+            const allUploaded = newUrls.every((url) => url !== null)
             if (allUploaded && onMultipleUploadComplete) {
-              onMultipleUploadComplete(newUrls)
+              const validUrls = newUrls.filter((url) => url !== null)
+              onMultipleUploadComplete(validUrls)
               setIsUploading(false)
             }
 
             return newUrls
           })
 
-          // Update single image state for backward compatibility
           if (index === 0) {
             setUploadedImageUrl(response.data.result.url)
           }
         }
       } catch (error) {
         console.error("Error uploading image:", error)
+        setImageFiles((prev) => prev.filter((_, i) => i !== index))
+        setUploadedImageUrls((prev) => prev.filter((_, i) => i !== index))
+        setImageLoadingStates((prev) => prev.filter((_, i) => i !== index))
         setIsUploading(false)
       } finally {
         setImageLoadingStates((prevStates) => {
@@ -126,7 +126,6 @@ function ProductImageUpload({
           return newStates
         })
 
-        // Update single image state for backward compatibility
         if (index === 0) {
           setImageLoadingState(false)
         }
@@ -137,11 +136,12 @@ function ProductImageUpload({
 
   useEffect(() => {
     if (!isUploading) return
-    console.log("Uploading images...", uploadedImageUrls );
-    imageFiles.forEach((file, index) => {
-      if (!uploadedImageUrls[index]) {
-        uploadImageToCloudinary(file, index)
-      }
+
+    const pendingUploads = imageFiles.filter((_, index) => uploadedImageUrls[index] === null)
+
+    pendingUploads.forEach((file, index) => {
+      const originalIndex = imageFiles.indexOf(file)
+      uploadImageToCloudinary(file, originalIndex)
     })
   }, [imageFiles, uploadedImageUrls, uploadImageToCloudinary, isUploading])
 
@@ -226,8 +226,4 @@ function ProductImageUpload({
 }
 
 export default ProductImageUpload
-
-
-
-
 

@@ -149,8 +149,8 @@ function Categories() {
   console.log(productList, "productListproductListproductList");
 
   return (
-    // <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6 max-w-8xl mx-auto mt-8">
-    <div className="mt-8 p-4 md:p-6 max-w-8xl mx-auto">
+    // <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6 max-w-7xl mx-auto mt-8">
+    <div className="mt-8 p-4 md:p-6 max-w-7xl mx-auto">
       {/* <ProductFilter filters={filters} handleFilter={handleFilter} /> */}
       <div className="flex flex-wrap rounded-md justify-center bg-blue-500 rounded-1xl gap-4 p-3 mt-10 mb-4">
         {filterOptions.category.map((item) => (

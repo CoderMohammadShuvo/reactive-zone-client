@@ -1,171 +1,173 @@
-import { HousePlug, LogOut, Menu, ShoppingCart, UserCog } from "lucide-react";
+"use client"
+
+import { useState } from "react"
+import { Menu, Search, ShoppingCart, Heart, RefreshCw, User, Phone, Mail } from "lucide-react"
+import { HousePlug, LogOut,  UserCog } from "lucide-react";
 import {
   Link,
   useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { Button } from "../ui/button";
-import { useDispatch, useSelector } from "react-redux";
-import { shoppingViewHeaderMenuItems } from "@/config";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "../ui/avatar";
-import { logoutUser } from "@/store/auth-slice";
-import UserCartWrapper from "./cart-wrapper";
-import { useEffect, useState } from "react";
-import { fetchCartItems } from "@/store/shop/cart-slice";
-import { Label } from "../ui/label";
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
-function MenuItems() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
+const mainNavItems = [
+  "Laptop",
+  "Desktop and Server",
+  "Gaming",
+  "Monitor",
+  "Tablet PC",
+  "Printer",
+  "Camera",
+  "Security System",
+  "Network",
+  "Sound System",
+  "Office Items",
+  "Accessories",
+  "Software",
+  "Daily Life",
+  
+]
 
-  function handleNavigate(getCurrentMenuItem) {
-    sessionStorage.removeItem("filters");
-    const currentFilter =
-      getCurrentMenuItem.id !== "home" &&
-      getCurrentMenuItem.id !== "products" &&
-      getCurrentMenuItem.id !== "search" &&
-      getCurrentMenuItem.id !== "categories"
-        ? {
-            category: [getCurrentMenuItem.id],
-          }
-        : null;
 
-    sessionStorage.setItem("filters", JSON.stringify(currentFilter));
+const accessories = ["Laptop Ram", "Laptop Cooler", "Laptop Bag", "Stand", "Battery", "Adapter", "Caddy"]
 
-    location.pathname.includes("listing") && currentFilter !== null
-      ? setSearchParams(
-          new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
-        )
-      : navigate(getCurrentMenuItem.path);
-  }
+export default function Navbar() {
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
 
   return (
-    <>
-      <nav className="flex flex-col mb-3 mt-2 lg:mb-0 lg:items-center gap-6 lg:flex-row  w-full">
-        {shoppingViewHeaderMenuItems.map((menuItem) => (
-          <Label
-            onClick={() => handleNavigate(menuItem)}
-            className="text-sm font-medium cursor-pointer"
-            key={menuItem.id}
-          >
-            {menuItem.label}
-          </Label>
-        ))}
-      </nav>
-    </>
-  );
-}
+    <nav className="w-full bg-black text-white">
+      {/* Top Bar */}
+      <div className="hidden md:flex justify-between items-center px-4 py-2 text-sm  max-w-7xl mx-auto">
+        <div className="flex items-center space-x-4  ">
+          <div className="flex items-center">
+            <Phone className="h-4 w-4 mr-2" />
+            <span>16 810</span>
+          </div>
+          <div className="flex items-center">
+            <Mail className="h-4 w-4 mr-2" />
+            <span>info@reactivezone.com</span>
+          </div>
+        </div>
+        <div className="flex items-center space-x-4">
+          <span>Offers</span>
+          <span>Big Sale</span>
+          <span>New Arrival</span>
+          <span>Customer Service</span>
+        </div>
+      </div>
 
-function HeaderRightContent() {
-  const { user } = useSelector((state) => state.auth);
-  const { cartItems } = useSelector((state) => state.shopCart);
-  const [openCartSheet, setOpenCartSheet] = useState(false);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+      {/* Main Header */}
+      <div className="container mx-auto px-4 py-4 max-w-7xl mx-auto" >
+        <div className="flex items-center justify-between">
+          {/* Mobile Menu */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" className="md:hidden">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] bg-black text-white">
+              <div className="flex flex-col space-y-4 mt-8">
+                {mainNavItems.map((item) => (
+                  <a key={item} href="#" className="hover:text-green-500">
+                    {item}
+                  </a>
+                ))}
+              </div>
+            </SheetContent>
+          </Sheet>
 
-  function handleLogout() {
-    dispatch(logoutUser());
-  }
-
-  useEffect(() => {
-    dispatch(fetchCartItems(user?.id));
-  }, [dispatch]);
-
-  // console.log(cartItems, "sagor");
-
-  return (
-    <div className="flex lg:items-center lg:flex-row flex-col gap-4">
-      <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
-        <Button
-          onClick={() => setOpenCartSheet(true)}
-          variant="outline"
-          size="icon"
-          className="relative"
-        >
-          <ShoppingCart className="w-6 h-6" />
-          <span className="absolute top-[-5px] right-[2px] font-bold text-sm">
-            {cartItems?.items?.length || 0}
-          </span>
-          <span className="sr-only">User cart</span>
-        </Button>
-        <UserCartWrapper
-          setOpenCartSheet={setOpenCartSheet}
-          cartItems={
-            cartItems && cartItems.items && cartItems.items.length > 0
-              ? cartItems.items
-              : []
-          }
-        />
-      </Sheet>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Avatar className="bg-black cursor-pointer">
-            <AvatarFallback className="bg-black text-white font-extrabold">
-              {user?.userName[0].toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side="right" className="w-56">
-          <DropdownMenuLabel>Logged in as {user?.userName}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => navigate("/shop/account")}>
-            <UserCog className="mr-2 h-4 w-4" />
-            Account
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
-}
-
-function ShoppingHeader() {
-  return (
-    <div className="mb-4">
-      <header className=" top-0 z-40 w-full border-b bg-background fixed ">
-        <div className="flex h-20 items-center justify-between px-4 md:px-6 max-w-8xl mx-auto ">
+          {/* Logo */}
           <Link to="/shop/home" className="flex items-center gap-2">
             <HousePlug className="h-6 w-6" />
             <span className="font-bold">Reactive Zone</span>
           </Link>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="lg:hidden">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Toggle header menu</span>
+
+          {/* Search Bar */}
+          <div className="hidden md:flex flex-1 max-w-2xl mx-8">
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="Enter Your Keyword..."
+                className="w-full px-4 py-2 rounded-l-md text-black"
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+              />
+              <Button className="absolute right-0 top-0 h-full rounded-l-none bg-green-500 hover:bg-green-600">
+                <Search className="h-5 w-5" />
               </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-full max-w-xs">
-              <MenuItems />
-              <HeaderRightContent />
-            </SheetContent>
-          </Sheet>
-          <div className="hidden lg:block">
-            <MenuItems />
+            </div>
           </div>
-          <div className="hidden lg:block">
-            <HeaderRightContent />
+
+          {/* System Builder & Icons */}
+          <div className="flex items-center space-x-4">
+            <Button variant="outline" className="hidden md:flex bg-green-500 hover:bg-green-600">
+              SYSTEM BUILDER
+            </Button>
+            <div className="flex items-center space-x-2">
+              <Button variant="ghost" size="icon">
+                <ShoppingCart className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon">
+                <Heart className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon">
+                <RefreshCw className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon">
+                <User className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
         </div>
-      </header>
-    </div>
-  );
-}
 
-export default ShoppingHeader;
+        {/* Navigation Menu */}
+        <div className="hidden md:flex mt-4">
+          <ul className="flex space-x-6 text-sm">
+            {mainNavItems.map((item) => (
+              <li key={item}>
+                <a href="#" className="hover:text-green-500">
+                  {item}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Submenu */}
+      {/* <div className="hidden md:block bg-gray-200 text-black">
+        <div className="container mx-auto px-4 py-2">
+          <div className="grid grid-cols-3 gap-8">
+            <div>
+              <h3 className="font-semibold mb-2">Laptop Brands</h3>
+              <ul className="space-y-1 text-sm">
+                {laptopBrands.map((brand) => (
+                  <li key={brand}>
+                    <a href="#" className="hover:text-green-700">
+                      {brand}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-2">Accessories</h3>
+              <ul className="space-y-1 text-sm">
+                {accessories.map((accessory) => (
+                  <li key={accessory}>
+                    <a href="#" className="hover:text-green-700">
+                      {accessory}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div> */}
+    </nav>
+  )
+}
