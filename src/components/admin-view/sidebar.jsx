@@ -30,6 +30,12 @@ const adminSidebarMenuItems = [
     icon: <BadgeCheck />,
   },
   {
+    id: "sales",
+    label: "Sales",
+    path: "/admin/sales",
+    icon: <BadgeCheck />,
+  },
+  {
     id: "users",
     label: "All Users",
     path: "/admin/users",
