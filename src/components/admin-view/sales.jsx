@@ -49,8 +49,10 @@ function AdminSalesView() {
     <Card>
       <CardHeader className="flex flex-row justify-between w-full items-center">
         <CardTitle>Sales</CardTitle>
-        <Link to='/admin/create-sales'>  <Button>New Sale</Button></Link>
-      
+        <Link to="/admin/create-sales">
+          {" "}
+          <Button>New Sale</Button>
+        </Link>
       </CardHeader>
       <CardContent>
         <div className="relative w-full sm:w-64">
