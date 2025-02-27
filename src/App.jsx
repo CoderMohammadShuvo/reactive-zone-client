@@ -27,6 +27,7 @@ import AllUsersForAdmin from "./pages/admin-view/all-users";
 import { CategoryManagement } from "./pages/admin-view/category-management";
 import Categories from "./pages/shopping-view/categories";
 import AdminSales from "./pages/admin-view/sales";
+import AdminSalesCreateView from "./components/admin-view/new-sale";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -81,6 +82,7 @@ function App() {
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="sales" element={<AdminSales />} />
+          <Route path="create-sales" element={<AdminSalesCreateView/>} />
           <Route path="users" element={<AllUsersForAdmin />} />
           <Route path="features" element={<AdminFeatures />} />
           <Route path="category" element={<CategoryManagement />} />

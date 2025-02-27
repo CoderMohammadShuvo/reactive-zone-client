@@ -20,6 +20,7 @@ import {
   resetOrderDetails,
 } from "@/store/admin/order-slice";
 import { Badge } from "../ui/badge";
+import { Link } from "react-router-dom";
 
 function AdminSalesView() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
@@ -46,8 +47,10 @@ function AdminSalesView() {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row justify-between w-full items-center">
         <CardTitle>Sales</CardTitle>
+        <Link to='/admin/create-sales'>  <Button>New Sale</Button></Link>
+      
       </CardHeader>
       <CardContent>
         <div className="relative w-full sm:w-64">
