@@ -279,7 +279,7 @@ function ShoppingHome() {
       <section className="py-12 bg-gray-100 ">
         <div className="px-4 max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-2">
-            Fetured categories
+            Featured categories
           </h2>
           <h2 className="font-bold text-center mb-8">
             Get Your Desired Product from Featured Category!
