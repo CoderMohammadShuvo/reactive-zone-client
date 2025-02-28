@@ -1,16 +1,27 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Menu, Search, ShoppingCart, Heart, RefreshCw, User, Phone, Mail } from "lucide-react"
-import { HousePlug, LogOut,  UserCog } from "lucide-react";
+import { useState } from "react";
+import {
+  Menu,
+  Search,
+  ShoppingCart,
+  Heart,
+  RefreshCw,
+  User,
+  Phone,
+  Mail,
+} from "lucide-react";
+import { HousePlug, LogOut, UserCog } from "lucide-react";
 import {
   Link,
   useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import UserCartWrapper from "./cart-wrapper";
+import { useSelector } from "react-redux";
 
 const mainNavItems = [
   "Laptop",
@@ -27,14 +38,23 @@ const mainNavItems = [
   "Accessories",
   "Software",
   "Daily Life",
-  
-]
+];
 
-
-const accessories = ["Laptop Ram", "Laptop Cooler", "Laptop Bag", "Stand", "Battery", "Adapter", "Caddy"]
+const accessories = [
+  "Laptop Ram",
+  "Laptop Cooler",
+  "Laptop Bag",
+  "Stand",
+  "Battery",
+  "Adapter",
+  "Caddy",
+];
 
 export default function Navbar() {
-  const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  // const { user } = useSelector((state) => state.auth);
+  const { cartItems } = useSelector((state) => state.shopCart);
+  const [openCartSheet, setOpenCartSheet] = useState(false);
 
   return (
     <nav className="w-full bg-black text-white">
@@ -59,7 +79,7 @@ export default function Navbar() {
       </div>
 
       {/* Main Header */}
-      <div className="container mx-auto px-4 py-4 max-w-7xl mx-auto" >
+      <div className="container  px-4 py-4 max-w-7xl mx-auto">
         <div className="flex items-center justify-between">
           {/* Mobile Menu */}
           <Sheet>
@@ -103,13 +123,41 @@ export default function Navbar() {
 
           {/* System Builder & Icons */}
           <div className="flex items-center space-x-4">
-            <Button variant="outline" className="hidden md:flex bg-green-500 hover:bg-green-600">
+            <Button
+              variant="outline"
+              className="hidden md:flex bg-green-500 hover:bg-green-600"
+            >
               SYSTEM BUILDER
             </Button>
             <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon">
-                <ShoppingCart className="h-5 w-5" />
-              </Button>
+              {/* <Button variant="ghost" size="icon">
+                <ShoppingCart className="h-5 w-5" />             
+              </Button> */}
+              <Sheet
+                open={openCartSheet}
+                onOpenChange={() => setOpenCartSheet(false)}
+              >
+                <Button
+                  onClick={() => setOpenCartSheet(true)}
+                  variant="outline"
+                  size="icon"
+                  className="relative"
+                >
+                  <ShoppingCart className="w-6 text-red-400 h-6" />
+                  <span className="absolute top-[-5px] right-[2px] font-bold text-sm">
+                    {cartItems?.items?.length || 0}
+                  </span>
+                  <span className="sr-only">User cart</span>
+                </Button>
+                <UserCartWrapper
+                  setOpenCartSheet={setOpenCartSheet}
+                  cartItems={
+                    cartItems && cartItems.items && cartItems.items.length > 0
+                      ? cartItems.items
+                      : []
+                  }
+                />
+              </Sheet>
               <Button variant="ghost" size="icon">
                 <Heart className="h-5 w-5" />
               </Button>
@@ -169,5 +217,5 @@ export default function Navbar() {
         </div>
       </div> */}
     </nav>
-  )
+  );
 }
