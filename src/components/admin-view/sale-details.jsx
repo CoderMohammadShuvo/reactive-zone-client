@@ -77,7 +77,7 @@ function AdminSalesDetailsView({ saleDetails }) {
   }
 
   return (
-    <DialogContent className="max-w-[900px] min-w-[200px]">
+    <DialogContent className="max-w-[900px] min-w-[200px] overflow-y-scroll h-[90vh]">
       {/* Printable Content */}
       <div ref={printRef} className="print-section">
         <div className="flex mb-4 justify-between pt-4">
