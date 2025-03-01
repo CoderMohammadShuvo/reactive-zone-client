@@ -9,13 +9,13 @@ function ShoppingProductTile({
   handleAddtoCart,
 }) {
   return (
-    <Card className="w-full max-w-sm mx-auto">
+    <Card className="w-full max-w-sm mx-auto ">
       <div onClick={() => handleGetProductDetails(product?._id)}>
         <div className="relative p-4">
           <img
-            src={product?.image}
+            src={product?.image[0]}
             alt={product?.title}
-            className="w-full h-[300px] object-cover rounded-t-lg cover"
+            className="w-full h-[300px] object-cover rounded-t-lg cover cursor-pointer"
           />
           {product?.totalStock === 0 ? (
             <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
@@ -32,7 +32,7 @@ function ShoppingProductTile({
           ) : null}
         </div>
         <CardContent className="p-4">
-          <h2 className="text-xl font-bold mb-2 truncate">{product?.title}</h2>
+          <h2 className="text-xl font-bold mb-2 truncate cursor-pointer">{product?.title}</h2>
           <span className="text-[16px] text-muted-foreground line-clamp-2">
           {product?.description}
             </span>

@@ -83,48 +83,48 @@ function AdminProducts() {
     }
   }
 
-  // function onSubmit(event) {
-  //   event.preventDefault()
-
-  //   currentEditedId !== null
-  //     ? dispatch(
-  //         editProduct({
-  //           id: currentEditedId,
-  //           formData,
-  //         }),
-  //       ).then((data) => {
-  //         console.log(data, "edit")
-
-  //         if (data?.payload?.success) {
-  //           dispatch(fetchAllProducts())
-  //           setFormData(initialFormData)
-  //           setOpenCreateProductsDialog(false)
-  //           setCurrentEditedId(null)
-  //         }
-  //       })
-  //     : dispatch(
-  //         addNewProduct({
-  //           ...formData,
-  //           image: uploadedImageUrl,
-  //         }),
-  //       ).then((data) => {
-  //         if (data?.payload?.success) {
-  //           dispatch(fetchAllProducts())
-  //           setOpenCreateProductsDialog(false)
-  //           setImageFile(null)
-  //           setFormData(initialFormData)
-  //           toast({
-  //             title: "Product added successfully",
-  //           })
-  //         }
-  //       })
-  // }
-
   function onSubmit(event) {
-    event.preventDefault();
-    console.log("Form data", uploadedImageUrl);
-    // console.log("Image file", imageFile);
+    event.preventDefault()
+
+    currentEditedId !== null
+      ? dispatch(
+          editProduct({
+            id: currentEditedId,
+            formData,
+          }),
+        ).then((data) => {
+          console.log(data, "edit")
+
+          if (data?.payload?.success) {
+            dispatch(fetchAllProducts())
+            setFormData(initialFormData)
+            setOpenCreateProductsDialog(false)
+            setCurrentEditedId(null)
+          }
+        })
+      : dispatch(
+          addNewProduct({
+            ...formData,
+            image: uploadedImageUrl,
+          }),
+        ).then((data) => {
+          if (data?.payload?.success) {
+            dispatch(fetchAllProducts())
+            setOpenCreateProductsDialog(false)
+            setImageFile(null)
+            setFormData(initialFormData)
+            toast({
+              title: "Product added successfully",
+            })
+          }
+        })
   }
+
+  // function onSubmit(event) {
+  //   event.preventDefault();
+  //   console.log("Form data", uploadedImageUrl);
+  //   // console.log("Image file", imageFile);
+  // }
 
   function handleDelete(getCurrentProductId) {
     dispatch(deleteProduct(getCurrentProductId)).then((data) => {
@@ -219,7 +219,7 @@ function AdminProducts() {
                 <TableRow key={productItem._id}>
                   <TableCell>
                     <img
-                      src={productItem.image || "/placeholder.svg"}
+                      src={productItem.image[0] || "/placeholder.svg"}
                       alt={productItem.title}
                       className="w-16 h-16 object-cover"
                     />

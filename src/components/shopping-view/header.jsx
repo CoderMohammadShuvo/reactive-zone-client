@@ -18,10 +18,20 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import { logoutUser } from "@/store/auth-slice";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import UserCartWrapper from "./cart-wrapper";
-import { useSelector } from "react-redux";
 
 const mainNavItems = [
   "Laptop",
@@ -52,9 +62,14 @@ const accessories = [
 
 export default function Navbar() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  // const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
   const [openCartSheet, setOpenCartSheet] = useState(false);
+  const navigate = useNavigate();
+  function handleLogout() {
+    dispatch(logoutUser());
+  }
 
   return (
     <nav className="w-full bg-black text-white">
@@ -133,7 +148,7 @@ export default function Navbar() {
               {/* <Button variant="ghost" size="icon">
                 <ShoppingCart className="h-5 w-5" />             
               </Button> */}
-              <Sheet
+              {/* <Sheet
                 open={openCartSheet}
                 onOpenChange={() => setOpenCartSheet(false)}
               >
@@ -157,16 +172,66 @@ export default function Navbar() {
                       : []
                   }
                 />
+              </Sheet> */}
+
+              <Sheet
+                open={openCartSheet}
+                onOpenChange={() => setOpenCartSheet(false)}
+              >
+                <Button
+                  onClick={() => setOpenCartSheet(true)}
+                  variant=""
+                  size="icon"
+                  className="relative bg-transparent"
+                >
+                  <ShoppingCart className="w-6 h-6 text-white " />
+                  <span className="absolute top-[-5px] right-[2px] font-bold text-sm">
+                    {cartItems?.items?.length || 0}
+                  </span>
+                  <span className="sr-only">User cart</span>
+                </Button>
+                <UserCartWrapper
+                  setOpenCartSheet={setOpenCartSheet}
+                  cartItems={
+                    cartItems && cartItems.items && cartItems.items.length > 0
+                      ? cartItems.items
+                      : []
+                  }
+                />
               </Sheet>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="bg-black cursor-pointer">
+                    <AvatarFallback className="bg-black text-white font-extrabold">
+                      <User className="h-5 w-5" />
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="right" className="w-56">
+                  <DropdownMenuLabel>
+                    Logged in as {user?.userName}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate("/shop/account")}>
+                    <UserCog className="mr-2 h-4 w-4" />
+                    Account
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <Button variant="ghost" size="icon">
                 <Heart className="h-5 w-5" />
               </Button>
               <Button variant="ghost" size="icon">
                 <RefreshCw className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-              </Button>
+              <Button variant="ghost" size="icon"></Button>
             </div>
           </div>
         </div>
